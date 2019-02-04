@@ -1,6 +1,6 @@
 # Why GraphQL ?
 
-This is a presentation made with [MDX deck](https://github.com/jxnblk/mdx-deck) for a talk in [Nodeco](https://www.meetup.com/es-ES/node_co/), presented by [@lfades](https://github.com/lfades).
+This is a presentation made with [MDX deck](https://github.com/jxnblk/mdx-deck) for a talk in [Nodeco](https://www.meetup.com/es-ES/node_co/), presented by [@lfades](https://github.com/lfades). You can see it running here: [graphql-nodeco.now.sh](https://graphql-nodeco.now.sh)
 
 # How to run
 
