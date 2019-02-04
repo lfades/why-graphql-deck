@@ -1,0 +1,442 @@
+import { Appear } from 'mdx-deck';
+import { CodeSurfer } from "mdx-deck-code-surfer";
+
+export { future as theme } from 'mdx-deck/themes';
+
+# Why GraphQL ?
+
+And why Javascript is not enough
+---
+
+# About me
+
+Hi, I'm Luis Fernando Alvarez David
+
+Full Stack Developer currently working in PSL and as a freelancer for Wes Bos
+
+Github / Spectrum.chat: [@LFades](https://github.com/lfades)
+
+Linkedin: https://www.linkedin.com/in/luis-fernando-alvarez-david-1a490a158/
+---
+
+# REST and GraphQL
+
+- REST is Procedural
+- GraphQL is Declarative
+---
+
+<CodeSurfer
+  title="REST"
+  code={`https://api.github.com/events
+[
+  {
+    "type": "Event",
+    "public": true,
+    "payload": {
+    },
+    "repo": {
+      "id": 3,
+      "name": "octocat/Hello-World",
+      "url": "https://api.github.com/repos/octocat/Hello-World"
+    },
+    "actor": {
+      "id": 1,
+      "login": "octocat",
+      "gravatar_id": "",
+      "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+      "url": "https://api.github.com/users/octocat"
+    },
+    "org": {
+      "id": 1,
+      "login": "github",
+      "gravatar_id": "",
+      "url": "https://api.github.com/orgs/github",
+      "avatar_url": "https://github.com/images/error/octocat_happy.gif"
+    },
+    "created_at": "2011-09-06T17:26:27Z",
+    "id": "12345"
+  }
+]
+https://api.github.com/repos/:owner/:repo/events
+https://api.github.com/repos/:owner/:repo/issues/events
+https://api.github.com/networks/:owner/:repo/events
+https://api.github.com/orgs/:org/events`}
+  lang="json"
+  dark
+  steps={[
+    { lines: [1], notes: "First define the service" },
+    { range: [2, 30], notes: "Do the request and get a response" },
+    { range: [30, 34], notes: "Now do the same for more services" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="GraphQL"
+  code={`query {
+  repository(owner:"octocat", name:"Hello-World") {
+    issues(last:20, states:CLOSED) {
+      edges {
+        node {
+          title
+          url
+          labels(first:5) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "edges": [
+          {
+            "node": {
+              "title": "test",
+              "url": "https://github.com/octocat/Hello-World/issues/409",
+              "labels": {
+                "edges": [
+                  {
+                    "node": {
+                      "name": "good first issue"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "title": "test",
+              "url": "https://github.com/octocat/Hello-World/issues/410",
+              "labels": {
+                "edges": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}`}
+  lang="javascript"
+  dark
+  steps={[
+    { range: [1, 19], notes: "First define the query" },
+    { range: [20, 53], notes: "Do the request and get the data you wanted" },
+    { lines: [21, 24, 26], notes: "Standards" },
+  ]}
+/>
+---
+
+<div style={{ textAlign: 'initial' }}>
+  <h1>Advantages of GraphQL</h1>
+
+  <ul>
+    <Appear>
+      <li>One single and consistent source of truth</li>
+      <li>No more 99+ different services</li>
+      <li>Or 99+ different data schemas</li>
+      <li>Better developer experience 🎉👩🏼‍💻</li>
+      <li>The frontend guy knows how and where the data is</li>
+      <li>And the backend guy can stop being the bad guy</li>
+      <li>New features can be easily added</li>
+      <li>High maintainability / Ship faster 🚀</li>
+      <li>Microservices architecture is easier</li>
+      <li>Security is more reliable and easier to implement</li>
+      <li>More room for performance, metrics, documentation</li>
+      <li>Awesome tools, and it will be even better!</li>
+    </Appear>
+  </ul>
+</div>
+---
+
+<h1>Disadvantages of GraphQL</h1>
+
+> "With great power comes great responsibility"
+
+---
+
+<ul style={{ textAlign: 'initial' }}>
+  <li>Query complexity and rate limiting</li>
+  <Appear>
+    <li>Query catching</li>
+    <li>Query and data size</li>
+    <li>Unpredictable execution: N + 1 Problem</li>
+    <li>The server needs to parse the query</li>
+    <li>File uploads</li>
+    <li>Schema stitching can be quite overwhelming</li>
+    <li>A typed schema works better with typed languages</li>
+    <li>It's still quite new and tools change quickly</li>
+    <li>"Good things take time"</li>
+  </Appear>
+</ul>
+---
+
+# is GraphQL easy ? 🤔
+
+Yes and No, there are many good tools and standards for pagination, security, catching, schema definition and everything else that we should follow and improve
+---
+
+# Schema stitching
+
+"Schema stitching is the process of creating a single GraphQL schema from multiple underlying GraphQL APIs." - Apollo docs
+
+Microservices are possible because of this
+---
+
+<CodeSurfer
+  title="Schema First"
+  code={`type User {
+  id: ID!
+  username: String!
+  userName: String! @deprecated
+}
+type Query {
+  users: [User]!
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { notes: "The schema is defined in its own file" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Schema First"
+  code={`module.exports = {
+  Query: {
+    users(root, args, { dataSources }) {
+      return dataSources.users.find();
+    },
+  },
+  User: {
+    username(user) {
+      return user.username;
+    },
+    userName(user) {
+      return user.username;
+    },
+  },
+};`}
+  lang="graphql"
+  dark
+  steps={[
+    { notes: "Resolvers are later defined elsewhere" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Resolvers First"
+  code={`const userType = new GraphQLObjectType({
+  name: 'User',
+  fields: () => ({
+    id: {
+      type: GraphQLNonNull(GraphQLString),
+    },
+    username: {
+      type: GraphQLString,
+      resolve: user => user.username,
+    },
+    userName: {
+      type: GraphQLString,
+      resolve: user => user.username,
+    },
+  }),
+});
+const query = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    users: {
+      type: userType,
+      resolve(root, args, { dataSources }) {
+        return dataSources.users.find();
+      },
+    },
+  },
+});
+const schema = new GraphQLSchema({
+  query,
+  types: [userType]
+});`}
+  lang="graphql"
+  dark
+  steps={[
+    { notes: "Resolvers and Schema are defined together" },
+  ]}
+/>
+---
+
+<div style={{ textAlign: 'initial' }}>
+  <h1>Schema First vs Resolvers First</h1>
+
+  <ul>
+    <Appear>
+      <li>Schema first separates concerns that should be together</li>
+      <li>Resolvers first is more verbose</li>
+      <li>Schema first ignores the capabilities of the language</li>
+      <li>Schema first is not very well supported</li>
+    </Appear>
+  </ul>
+</div>
+---
+
+<CodeSurfer
+  title="Scalars"
+  code={`type User {
+  id: ID!
+  email: String!
+  firstName: String
+  lastName: String
+  createdAt: Timestamp
+  age: Int
+}
+type User {
+  id: ID!
+  email: Email!
+  firstName: String32
+  lastName: String64
+  createdAt: JSDate
+  age: ProbablyNotAFloat
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { range: [1, 8], notes: "Use well-known scalars and be language agnostic" },
+    { range: [9, 16], notes: "What's wrong with you ?" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Enums"
+  code={`enum UserHobbies {
+  going_out_with_mom
+  workingAtTheMall
+  watching_life_goals
+  fortnite
+}
+enum UserHobbies {
+  READING
+  BADASS_GAMES
+  JOHN_WICK_MOVIES
+  HAVING_SOCIAL_LIFE
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { range: [1, 6], notes: "I'm not sure about this" },
+    { range: [7, 12], notes: "Let's follow good standards" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Inputs"
+  code={`type Mutation {
+  updateUser(
+    id: ID!
+    email: String
+    firstName: String
+    lastName: String
+    username: String
+  ): User!
+}
+input UpdateUserInput {
+  id: ID!
+  email: String
+  firstName: String
+  lastName: String
+  username: String
+}
+type Mutation {
+  updateUser(input: UpdateUserInput!): User!
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { range: [1, 9], notes: "So many arguments 😨" },
+    { range: [10, 19], notes: "Use inputs and standards 👍" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Directives"
+  code={`type User {
+  id: ID!
+  username: String! @lowercase
+  userName: String! @deprecated
+}
+type Mutation {
+  updateUsername(
+    id: ID!
+    username: String! @validate(minLength: 3)
+  ): User! @authRequired
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { lines: [3], notes: "Why would the server need to to that ?" },
+    { lines: [4], notes: "Ok, this makes sense!" },
+    { lines: [9], notes: "Why? The client can do its own validations!" },
+    { lines: [10], notes: "Cool, only the server knows this" },
+  ]}
+/>
+---
+
+<CodeSurfer
+  title="Comment !== Description"
+  code={`"""
+A description that describes the following schema
+"""
+type Mutation {
+  """This mutation subscribes the user to Pewdiepie, good choice mate 👊"""
+  subscribeToPewdiepie(
+    "This is also a description"
+    reason: String
+  ): Boolean
+  # This secretly unsubscribes the user from T-Series and subscribes him to Pewdiepie
+  subscribeToTSeries(
+    # We actually don't care
+    reason: String
+  ): Boolean
+}`}
+  lang="graphql"
+  dark
+  steps={[
+    { range: [1, 4], notes: "A description is used as a documentation tool" },
+    { range: [5, 6], notes: "It's intended to be public" },
+    { range: [7, 8]},
+    { range: [10, 14], notes: "Comments are not public and are ignored by GraphQL" },
+  ]}
+/>
+---
+
+### Join the communities
+
+- GraphQL Weekly: https://www.graphqlweekly.com/
+- GraphQL community: https://graphql.org/community/
+- Apollo Team: https://www.apollographql.com/slack/
+- Prisma: https://slack.prisma.io/
+
+
+### Getting started
+
+- GraphQL: https://graphql.org/learn/
+- Apollo tutorial: https://www.apollographql.com/docs/tutorial/introduction.html
+- GraphQL summit 2018 keynote: https://www.youtube.com/watch?v=IjJkAL4RWyQ
+---
+
+# Thank you! ❤️
+
+Made with [MDX deck](https://github.com/jxnblk/mdx-deck)

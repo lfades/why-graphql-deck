@@ -1,0 +1,16 @@
+{
+  "name": "why-graphql-deck",
+  "version": "1.0.0",
+  "description": "Presentation for my talk about GraphQL in Nodeco",
+  "main": "index.js",
+  "scripts": {
+    "start": "mdx-deck deck.mdx",
+    "build": "mdx-deck build deck.mdx"
+  },
+  "author": "Luis Alvarez - lfades",
+  "license": "MIT",
+  "devDependencies": {
+    "mdx-deck": "^1.8.2",
+    "mdx-deck-code-surfer": "^0.5.5"
+  }
+}
